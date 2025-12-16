@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme/colors';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
@@ -12,9 +13,11 @@ const tabs = [
 export function AppTabs() {
     const navigation = useNavigation();
     const route = useRoute();
+    const insets = useSafeAreaInsets();
+    const padBottom = Math.max(insets.bottom, 12);
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { paddingBottom: padBottom }]}>
             {tabs.map((tab) => {
                 const isActive = route.name === tab.route;
                 return (
@@ -35,22 +38,26 @@ export function AppTabs() {
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        backgroundColor: colors.surface,
-        borderTopWidth: 1,
-        borderColor: colors.border,
+        backgroundColor: '#ffffff',
+        borderTopWidth: 0,
         paddingVertical: 10,
         paddingHorizontal: 12,
         justifyContent: 'space-between',
+        shadowColor: '#000',
+        shadowOpacity: 0.06,
+        shadowRadius: 12,
+        shadowOffset: { width: 0, height: -6 },
     },
     tab: {
         flex: 1,
         alignItems: 'center',
         paddingVertical: 10,
         borderRadius: 12,
-        marginHorizontal: 4,
+        marginHorizontal: 6,
     },
     active: {
         backgroundColor: colors.primary,
+        elevation: 3,
     },
     label: {
         color: colors.text,

@@ -20,7 +20,7 @@ function extractJsonBlock(text) {
 
 export async function structureRecipeFromText(unstructuredText) {
     const model = getModel();
-    const prompt = `You are a recipe data formatter. Take the user's unformatted recipe text and output a strict JSON object with keys: title, description, ingredients (array of strings), steps (array of strings), prepTime (minutes), cookTime (minutes), servings (number), category (string). Do not add commentary.`;
+    const prompt = `You are a recipe data formatter. Take the user's unformatted recipe text and output a strict JSON object with keys: title (string), description (string), ingredients (array of strings), steps (array of strings), cuisine (one of: continental, north_indian, south_indian, english, american, chinese, japanese, mediterranean, mexican, thai), type (one of: veg, non_veg, vegan), course (one of: starter, appetizer, main_course, beverage, dessert, snack), nutrition (object with optional numeric calories, protein, carbs, fat), image (url string), link (string). No extra commentary.`;
     const result = await model.generateContent([
         { text: prompt },
         { text: `Recipe text: ${unstructuredText}` },
@@ -32,7 +32,7 @@ export async function structureRecipeFromText(unstructuredText) {
 
 export async function generateRecipeFromPrompt(prompt) {
     const model = getModel('gemini-2.5-pro');
-    const instruction = `Create a delicious recipe based on the user's prompt. Respond as JSON with keys: title, description, ingredients (array of strings), steps (array of strings), prepTime, cookTime, servings, category, tips (array of short strings).`;
+    const instruction = `Create a delicious recipe based on the user's prompt. Respond ONLY as JSON with keys: title, description, ingredients (array of strings), steps (array of strings), cuisine (one of: continental, north_indian, south_indian, english, american, chinese, japanese, mediterranean, mexican, thai), type (one of: veg, non_veg, vegan), course (one of: starter, appetizer, main_course, beverage, dessert, snack), nutrition (object with optional numeric calories, protein, carbs, fat), image (url string), link (string), tips (array of short strings).`;
     const result = await model.generateContent([
         { text: instruction },
         { text: `User prompt: ${prompt}` },

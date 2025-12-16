@@ -25,28 +25,29 @@ export function Button({ label, onPress, variant = 'primary', disabled }) {
 
 const styles = StyleSheet.create({
     base: {
-        paddingVertical: 14,
-        paddingHorizontal: 16,
-        borderRadius: 14,
-        borderWidth: 1,
-        borderColor: colors.border,
+        paddingVertical: 12,
+        paddingHorizontal: 18,
+        borderRadius: 12,
         alignItems: 'center',
         marginTop: 8,
+        minWidth: 120,
+        elevation: 2,
     },
     primary: {
         backgroundColor: colors.primary,
-        borderColor: colors.primary,
-        shadowColor: '#000',
-        shadowOpacity: 0.08,
-        shadowRadius: 6,
-        shadowOffset: { width: 0, height: 3 },
+        shadowColor: colors.primary,
+        shadowOpacity: 0.12,
+        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 6 },
     },
     secondary: {
         backgroundColor: colors.surface,
+        borderWidth: 1,
+        borderColor: colors.primaryMuted,
     },
     pressed: {
-        transform: [{ scale: 0.99 }],
-        opacity: 0.96,
+        transform: [{ scale: 0.995 }],
+        opacity: 0.98,
     },
     disabled: {
         opacity: 0.5,
@@ -54,10 +55,10 @@ const styles = StyleSheet.create({
     label: {
         fontWeight: '700',
         letterSpacing: 0.2,
-        fontSize: 16,
+        fontSize: 15,
     },
     primaryLabel: {
-        color: '#ffffff',
+        color: '#fff',
     },
     secondaryLabel: {
         color: colors.text,
