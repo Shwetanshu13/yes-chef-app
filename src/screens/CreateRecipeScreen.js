@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { ScreenWrapper } from '../components/ScreenWrapper';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
@@ -9,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { createRecipe } from '../services/recipeService';
 import { generateRecipeFromPrompt, structureRecipeFromText } from '../services/aiService';
 import { AppTabs } from '../components/AppTabs';
+import { uploadImage } from '../services/uploadService';
 
 const typeOptions = [
     { label: 'Veg', value: 'veg' },
@@ -93,6 +95,7 @@ export default function CreateRecipeScreen() {
     const [prompt, setPrompt] = useState('');
     const [aiResult, setAiResult] = useState(null);
     const [working, setWorking] = useState(false);
+    const [uploading, setUploading] = useState(false);
 
     const resetForm = () => {
         setTitle('');
@@ -187,6 +190,32 @@ export default function CreateRecipeScreen() {
         }
     };
 
+    const handlePickAndUpload = async () => {
+        try {
+            setUploading(true);
+            const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (!perm.granted) {
+                Alert.alert('Permission needed', 'Please allow photo library access to upload an image.');
+                return;
+            }
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                quality: 0.85,
+            });
+            if (result.canceled) return;
+            const picked = result.assets?.[0]?.uri;
+            if (!picked) return;
+            const url = await uploadImage({ uri: picked, token });
+            setImage(url);
+            Alert.alert('Uploaded', 'Image uploaded successfully');
+        } catch (err) {
+            Alert.alert('Upload failed', err.message);
+        } finally {
+            setUploading(false);
+        }
+    };
+
     const saveAiRecipe = async () => {
         try {
             if (!aiResult) return;
@@ -239,6 +268,12 @@ export default function CreateRecipeScreen() {
                         </View>
 
                         <Input label="Image URL" value={image} onChangeText={setImage} placeholder="https://..." />
+                        <Button
+                            label={uploading ? 'Uploading…' : 'Pick & upload image'}
+                            variant="secondary"
+                            onPress={handlePickAndUpload}
+                            disabled={uploading}
+                        />
                         <Input label="Reference link (optional)" value={link} onChangeText={setLink} placeholder="https://..." />
 
                         <Text style={styles.label}>Nutrition (optional)</Text>
