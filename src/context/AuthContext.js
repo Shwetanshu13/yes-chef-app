@@ -17,10 +17,13 @@ export function AuthProvider({ children }) {
                 const savedToken = await SecureStore.getItemAsync(TOKEN_KEY);
                 if (savedToken) {
                     setToken(savedToken);
-                    const profile = await fetchProfile(savedToken);
-                    setUser(profile);
+                    const response = await fetchProfile(savedToken);
+                    // Backend returns { user: {...} } from /auth/me
+                    setUser(response.user);
                 }
             } catch (err) {
+                // Token may be invalid/expired - clear it
+                await SecureStore.deleteItemAsync(TOKEN_KEY);
                 setError(err.message);
             } finally {
                 setLoading(false);
