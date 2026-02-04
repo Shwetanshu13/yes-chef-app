@@ -33,6 +33,9 @@
         "projectId": "aaed4510-5953-4d2f-a380-c0e94a05a6c7"
       }
     },
-    "owner": "shwetanshusinha"
+    "owner": "shwetanshusinha",
+    "plugins": [
+      "expo-secure-store"
+    ]
   }
 }
