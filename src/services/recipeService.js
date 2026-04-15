@@ -19,6 +19,10 @@ export async function getRecipe({ token, id }) {
     return apiRequest(`/recipes/${id}`, { token });
 }
 
+export async function updateRecipe({ token, id, recipe }) {
+    return apiRequest(`/recipes/${id}`, { method: 'PATCH', body: recipe, token });
+}
+
 export async function addFriendRecipeVisibility({ token, friendId }) {
     return apiRequest('/friends/share', { method: 'POST', body: { friendId }, token });
 }

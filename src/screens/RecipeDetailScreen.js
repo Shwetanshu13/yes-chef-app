@@ -2,8 +2,9 @@ import React from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../theme/colors';
 import { ScreenWrapper } from '../components/ScreenWrapper';
+import { Button } from '../components/Button';
 
-export default function RecipeDetailScreen({ route }) {
+export default function RecipeDetailScreen({ route, navigation }) {
     const recipe = route.params?.recipe || {};
     const rawType = (recipe.type || '').toLowerCase();
     const typeLabel = rawType === 'veg' ? 'Veg' : rawType === 'non_veg' ? 'Non-Veg' : rawType === 'vegan' ? 'Vegan' : recipe.type;
@@ -34,6 +35,13 @@ export default function RecipeDetailScreen({ route }) {
 
             <Text style={styles.title}>{recipe.title}</Text>
             <Text style={styles.subtitle}>{recipe.description}</Text>
+            {(recipe.id || recipe._id) ? (
+                <Button
+                    label="Edit recipe"
+                    variant="secondary"
+                    onPress={() => navigation.navigate('CreateRecipe', { recipe })}
+                />
+            ) : null}
             <View style={styles.metaRow}>
                 {recipe.type ? <Text style={[styles.meta, typeStyle]}>{typeLabel}</Text> : null}
                 {cuisine ? <Text style={styles.meta}>{cuisine}</Text> : null}
@@ -77,12 +85,16 @@ const styles = StyleSheet.create({
         height: 220,
         borderRadius: 16,
         marginBottom: 14,
+        borderWidth: 1,
+        borderColor: colors.border,
     },
     imagePlaceholder: {
         width: '100%',
         height: 220,
         borderRadius: 16,
-        backgroundColor: '#eef2ef',
+        backgroundColor: colors.chipBg,
+        borderWidth: 1,
+        borderColor: colors.border,
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 14,
@@ -119,24 +131,29 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
     },
     meta: {
-        backgroundColor: '#eef2ef',
+        backgroundColor: colors.chipBg,
+        borderWidth: 1,
+        borderColor: colors.border,
         paddingHorizontal: 10,
         paddingVertical: 6,
         borderRadius: 10,
-        fontWeight: '700',
+        fontWeight: '800',
         color: colors.text,
     },
     typeVeg: {
         color: '#1b5e20',
         backgroundColor: '#e8f5e9',
+        borderColor: '#c8e6c9',
     },
     typeNonVeg: {
         color: '#b71c1c',
         backgroundColor: '#ffebee',
+        borderColor: '#ffcdd2',
     },
     typeVegan: {
         color: '#2e7d32',
         backgroundColor: '#e8f5e9',
+        borderColor: '#c8e6c9',
     },
 });
 

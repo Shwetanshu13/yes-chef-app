@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { ScreenWrapper } from '../components/ScreenWrapper';
@@ -26,6 +26,9 @@ export default function LoginScreen({ navigation }) {
     return (
         <ScreenWrapper>
             <View style={styles.hero}>
+                <View style={styles.logoWrap}>
+                    <Image source={require('../../assets/icon.png')} style={styles.logo} resizeMode="contain" />
+                </View>
                 <Text style={styles.title}>Yes Chef</Text>
                 <Text style={styles.subtitle}>Your minimal recipe companion with a dash of AI.</Text>
             </View>
@@ -50,6 +53,21 @@ const styles = StyleSheet.create({
         marginTop: 30,
         marginBottom: 24,
     },
+    logoWrap: {
+        width: 72,
+        height: 72,
+        borderRadius: 20,
+        backgroundColor: colors.primaryMuted,
+        borderWidth: 1,
+        borderColor: colors.border,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 12,
+    },
+    logo: {
+        width: 56,
+        height: 56,
+    },
     title: {
         fontSize: 28,
         fontWeight: '800',
@@ -67,6 +85,6 @@ const styles = StyleSheet.create({
     },
     linkText: {
         color: colors.primary,
-        fontWeight: '700',
+        fontWeight: '800',
     },
 });

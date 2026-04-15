@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const apiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY || '';
 
-function getModel(modelName = 'gemini-2.5-flash') {
+function getModel(modelName = 'gemini-2.5-flash-lite') {
     if (!apiKey) {
         throw new Error('Missing Gemini API key. Set EXPO_PUBLIC_GEMINI_API_KEY.');
     }
@@ -31,7 +31,7 @@ export async function structureRecipeFromText(unstructuredText) {
 }
 
 export async function generateRecipeFromPrompt(prompt) {
-    const model = getModel('gemini-2.5-pro');
+    const model = getModel('gemini-2.5-flash-lite');
     const instruction = `Create a delicious recipe based on the user's prompt. Respond ONLY as JSON with keys: title, description, ingredients (array of strings), steps (array of strings), cuisine (one of: continental, north_indian, south_indian, english, american, chinese, japanese, mediterranean, mexican, thai), type (one of: veg, non_veg, vegan), course (one of: starter, appetizer, main_course, beverage, dessert, snack), nutrition (object with optional numeric calories, protein, carbs, fat), image (url string), link (string), tips (array of short strings).`;
     const result = await model.generateContent([
         { text: instruction },

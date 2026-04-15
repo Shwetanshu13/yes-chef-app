@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, StyleSheet, Text, View } from 'react-native';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { ScreenWrapper } from '../components/ScreenWrapper';
@@ -27,6 +27,9 @@ export default function SignupScreen() {
     return (
         <ScreenWrapper>
             <View style={styles.hero}>
+                <View style={styles.logoWrap}>
+                    <Image source={require('../../assets/icon.png')} style={styles.logo} resizeMode="contain" />
+                </View>
                 <Text style={styles.title}>Join Yes Chef</Text>
                 <Text style={styles.subtitle}>Save, generate, and share recipes with friends.</Text>
             </View>
@@ -48,6 +51,21 @@ const styles = StyleSheet.create({
     hero: {
         marginTop: 30,
         marginBottom: 24,
+    },
+    logoWrap: {
+        width: 72,
+        height: 72,
+        borderRadius: 20,
+        backgroundColor: colors.primaryMuted,
+        borderWidth: 1,
+        borderColor: colors.border,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 12,
+    },
+    logo: {
+        width: 56,
+        height: 56,
     },
     title: {
         fontSize: 28,

@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 8,
         borderRadius: 12,
-        backgroundColor: '#eef2ef',
+        backgroundColor: colors.chipBg,
         marginRight: 8,
         marginBottom: 8,
         borderWidth: 1,
@@ -32,8 +32,10 @@ const styles = StyleSheet.create({
     text: {
         color: colors.text,
         fontWeight: '600',
+        textTransform: 'capitalize',
     },
     textActive: {
-        color: '#fff',
+        color: colors.text,
+        fontWeight: '800',
     },
 });

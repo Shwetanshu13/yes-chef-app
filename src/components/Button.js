@@ -35,15 +35,17 @@ const styles = StyleSheet.create({
     },
     primary: {
         backgroundColor: colors.primary,
-        shadowColor: colors.primary,
-        shadowOpacity: 0.12,
-        shadowRadius: 8,
-        shadowOffset: { width: 0, height: 6 },
+        shadowColor: '#000',
+        shadowOpacity: 0.10,
+        shadowRadius: 12,
+        shadowOffset: { width: 0, height: 8 },
+        borderWidth: 1,
+        borderColor: '#d59605',
     },
     secondary: {
         backgroundColor: colors.surface,
         borderWidth: 1,
-        borderColor: colors.primaryMuted,
+        borderColor: colors.border,
     },
     pressed: {
         transform: [{ scale: 0.995 }],
@@ -58,7 +60,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     primaryLabel: {
-        color: '#fff',
+        color: colors.text,
     },
     secondaryLabel: {
         color: colors.text,

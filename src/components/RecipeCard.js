@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     imagePlaceholder: {
         width: '100%',
         height: 160,
-        backgroundColor: '#eef2ef',
+        backgroundColor: colors.chipBg,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -81,9 +81,10 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 18,
-        fontWeight: '700',
+        fontWeight: '800',
         color: colors.text,
         marginBottom: 10,
+        letterSpacing: 0.2,
     },
     metaRow: {
         flexDirection: 'row',
@@ -93,11 +94,13 @@ const styles = StyleSheet.create({
     meta: {
         color: colors.text,
         fontSize: 13,
-        fontWeight: '700',
-        backgroundColor: '#eef2ef',
+        fontWeight: '800',
+        backgroundColor: colors.chipBg,
         paddingHorizontal: 10,
         paddingVertical: 6,
         borderRadius: 10,
+        borderWidth: 1,
+        borderColor: colors.border,
     },
     typeVeg: {
         color: '#1b5e20',

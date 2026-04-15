@@ -9,9 +9,7 @@ export function ScreenWrapper({ children, scrollable, ScrollComponent }) {
         return (
             <SafeAreaView style={styles.safe}>
                 <Scroll style={styles.scroll} contentContainerStyle={styles.container}>
-                    <Scroll style={styles.inner}>
-                        {children}
-                    </Scroll>
+                    {children}
                 </Scroll>
             </SafeAreaView>
         );
@@ -33,13 +31,10 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     container: {
-        paddingHorizontal: 20,
-        paddingTop: 18,
+        paddingHorizontal: 18,
+        paddingTop: 16,
         paddingBottom: 40,
         maxWidth: 920,
         alignSelf: 'center',
-    },
-    inner: {
-        paddingBottom: 30,
     },
 });

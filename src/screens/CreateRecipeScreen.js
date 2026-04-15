@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { ScreenWrapper } from '../components/ScreenWrapper';
@@ -7,7 +7,7 @@ import { Button } from '../components/Button';
 import { TagChip } from '../components/TagChip';
 import { colors } from '../theme/colors';
 import { useAuth } from '../context/AuthContext';
-import { createRecipe } from '../services/recipeService';
+import { createRecipe, updateRecipe } from '../services/recipeService';
 import { generateRecipeFromPrompt, structureRecipeFromText } from '../services/aiService';
 import { AppTabs } from '../components/AppTabs';
 import { uploadImage } from '../services/uploadService';
@@ -46,14 +46,34 @@ function RecipePreview({ data }) {
         data.nutrition && typeof data.nutrition === 'object'
             ? Object.entries(data.nutrition)
             : [];
+
+    const capitalize = (value) => {
+        if (typeof value !== 'string') return value;
+        if (!value.length) return value;
+        return value.charAt(0).toUpperCase() + value.slice(1);
+    };
+
+    const formatLabel = (value) => {
+        if (typeof value !== 'string') return value;
+        return capitalize(value.replace(/_/g, ' '));
+    };
+
+    const formatTypeLabel = (value) => {
+        const raw = String(value || '').toLowerCase();
+        if (raw === 'veg') return 'Veg';
+        if (raw === 'non_veg') return 'Non-Veg';
+        if (raw === 'vegan') return 'Vegan';
+        return formatLabel(value);
+    };
+
     return (
         <View style={styles.preview}>
             <Text style={styles.previewTitle}>{data.title}</Text>
             <Text style={styles.previewSubtitle}>{data.description}</Text>
             <View style={styles.metaRow}>
-                {data.type ? <Text style={styles.meta}>{data.type}</Text> : null}
-                {data.cuisine ? <Text style={styles.meta}>{data.cuisine}</Text> : null}
-                {data.course ? <Text style={styles.meta}>{data.course}</Text> : null}
+                {data.type ? <Text style={styles.meta}>{formatTypeLabel(data.type)}</Text> : null}
+                {data.cuisine ? <Text style={styles.meta}>{formatLabel(data.cuisine)}</Text> : null}
+                {data.course ? <Text style={styles.meta}>{formatLabel(data.course)}</Text> : null}
             </View>
             <Text style={styles.previewLabel}>Ingredients</Text>
             {data.ingredients?.map((item, idx) => (
@@ -75,8 +95,10 @@ function RecipePreview({ data }) {
     );
 }
 
-export default function CreateRecipeScreen() {
+export default function CreateRecipeScreen({ route, navigation }) {
     const { token } = useAuth();
+    const editingRecipe = route?.params?.recipe || null;
+    const isEditMode = Boolean(editingRecipe?.id || editingRecipe?._id);
     const [mode, setMode] = useState('manual');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -96,6 +118,25 @@ export default function CreateRecipeScreen() {
     const [aiResult, setAiResult] = useState(null);
     const [working, setWorking] = useState(false);
     const [uploading, setUploading] = useState(false);
+
+    useEffect(() => {
+        if (!isEditMode) return;
+        const recipe = editingRecipe;
+        setMode('manual');
+        setTitle(recipe.title || '');
+        setDescription(recipe.description || '');
+        setIngredients(Array.isArray(recipe.ingredients) ? recipe.ingredients.join('\n') : '');
+        setSteps(Array.isArray(recipe.steps) ? recipe.steps.join('\n') : '');
+        setType(recipe.type || typeOptions[0].value);
+        setCuisine(recipe.cuisine || cuisineOptions[0]);
+        setCourse(recipe.course || courseOptions[2]);
+        setImage(recipe.image || '');
+        setLink(recipe.link || '');
+        setCalories(recipe.nutrition?.calories != null ? String(recipe.nutrition.calories) : '');
+        setProtein(recipe.nutrition?.protein != null ? String(recipe.nutrition.protein) : '');
+        setCarbs(recipe.nutrition?.carbs != null ? String(recipe.nutrition.carbs) : '');
+        setFat(recipe.nutrition?.fat != null ? String(recipe.nutrition.fat) : '');
+    }, [editingRecipe, isEditMode]);
 
     const resetForm = () => {
         setTitle('');
@@ -156,9 +197,15 @@ export default function CreateRecipeScreen() {
                 image: image.trim(),
                 link: link.trim(),
             };
-            await createRecipe({ token, recipe });
-            Alert.alert('Saved', 'Recipe saved successfully');
-            resetForm();
+            if (isEditMode) {
+                await updateRecipe({ token, id: editingRecipe.id || editingRecipe._id, recipe });
+                Alert.alert('Updated', 'Recipe updated successfully');
+                navigation.navigate('RecipeDetail', { recipe: { ...editingRecipe, ...recipe } });
+            } else {
+                await createRecipe({ token, recipe });
+                Alert.alert('Saved', 'Recipe saved successfully');
+                resetForm();
+            }
         } catch (err) {
             Alert.alert('Could not save', err.message);
         } finally {
@@ -234,10 +281,11 @@ export default function CreateRecipeScreen() {
         <View style={styles.page}>
             <ScreenWrapper scrollable ScrollComponent={ScrollView}>
                 <Text style={styles.heading}>Create recipe</Text>
+                {isEditMode ? <Text style={styles.editHint}>Editing existing recipe</Text> : null}
                 <View style={styles.modeRow}>
                     <TagChip label="Manual" active={mode === 'manual'} onPress={() => setMode('manual')} />
-                    <TagChip label="Semi AI" active={mode === 'semi'} onPress={() => setMode('semi')} />
-                    <TagChip label="Full AI" active={mode === 'full'} onPress={() => setMode('full')} />
+                    {!isEditMode ? <TagChip label="Semi AI" active={mode === 'semi'} onPress={() => setMode('semi')} /> : null}
+                    {!isEditMode ? <TagChip label="Full AI" active={mode === 'full'} onPress={() => setMode('full')} /> : null}
                 </View>
 
                 {mode === 'manual' && (
@@ -283,7 +331,11 @@ export default function CreateRecipeScreen() {
                             <View style={styles.quarter}><Input label="Carbs" value={carbs} onChangeText={setCarbs} keyboardType="numeric" /></View>
                             <View style={styles.quarter}><Input label="Fat" value={fat} onChangeText={setFat} keyboardType="numeric" /></View>
                         </View>
-                        <Button label={working ? 'Saving…' : 'Save recipe'} onPress={handleManualSave} disabled={working} />
+                        <Button
+                            label={working ? (isEditMode ? 'Updating…' : 'Saving…') : (isEditMode ? 'Update recipe' : 'Save recipe')}
+                            onPress={handleManualSave}
+                            disabled={working}
+                        />
                     </View>
                 )}
 
@@ -333,6 +385,11 @@ const styles = StyleSheet.create({
         color: colors.text,
         marginBottom: 8,
     },
+    editHint: {
+        color: colors.subtleText,
+        marginBottom: 8,
+        fontWeight: '600',
+    },
     modeRow: {
         flexDirection: 'row',
         marginBottom: 16,
@@ -356,11 +413,13 @@ const styles = StyleSheet.create({
         marginBottom: 6,
     },
     meta: {
-        backgroundColor: '#eef2ef',
+        backgroundColor: colors.chipBg,
+        borderWidth: 1,
+        borderColor: colors.border,
         paddingHorizontal: 10,
         paddingVertical: 6,
         borderRadius: 10,
-        fontWeight: '700',
+        fontWeight: '800',
         color: colors.text,
     },
     label: {
