@@ -20,7 +20,7 @@ function extractJsonBlock(text) {
 
 export async function structureRecipeFromText(unstructuredText) {
     const model = getModel();
-    const prompt = `You are a recipe data formatter. Take the user's unformatted recipe text and output a strict JSON object with keys: title (string), description (string), ingredients (array of strings), steps (array of strings), cuisine (one of: continental, north_indian, south_indian, english, american, chinese, japanese, mediterranean, mexican, thai), type (one of: veg, non_veg, vegan), course (one of: starter, appetizer, main_course, beverage, dessert, snack), nutrition (object with optional numeric calories, protein, carbs, fat), image (url string), link (string). No extra commentary.`;
+    const prompt = `You are a recipe data formatter. Take the user's unformatted recipe text and output a strict JSON object with keys: title (string), description (string), ingredients (array of strings), steps (array of strings), cuisine (one of: continental, north_indian, south_indian, english, american, chinese, japanese, mediterranean, mexican, thai), type (one of: veg, non_veg, vegan), course (one of: starter, appetizer, main_course, beverage, dessert, snack), nutrition (object with optional numeric calories, protein, carbs, fat). No extra commentary.`;
     const result = await model.generateContent([
         { text: prompt },
         { text: `Recipe text: ${unstructuredText}` },
